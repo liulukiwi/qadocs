@@ -1,0 +1,21 @@
+use master:Because the master database stores information about user databases and devices, you must be in the master database in order to issue the create database, alter database, disk init, disk refit, disk reinit, and disk mirroring commands.
+Sybase在安装时，自动创建了四个系统数据库：master、model、tempdb、sybsystemprocs
+Master数据库 它是管理和控制用户数据库以及维护服务器正常运行的核心数据库，它保存了大量的系统信息，如服务器配置、用户、设备等。
+Model数据库 它是为创建用户数据库而提供的模板。每当创建新的数据库时，SQL Server自动建立model数据库的一份拷贝，并把它扩充到用户所要求的大小，以此作为新用户数据库。Model数据库中包含每个用户数据库所要求的系统表。Model数据库可以被修改以便定制新创建的。
+tempdb数据库
+它是个临时数据库，为服务器运行与处理提供一个共享的存储区域，如group by和order by的中间结果就存放在这里。Tempdb的空间为服务器中所有数据库的所有用户所共享。每次重启SQL Server，服务器的一个自动进程都拷贝model数据库到tempdb数据库，并清除tempdb中原来的内容。因此tempdb中的用户表都是临时的。
+Sybsystemprocs数据库 它是专门用来保存系统命令（存储过程）的数据库，如sp_help、sp_configure、sp_helpdevice等。当
+任一数据库用户运行以sp_开头的存储过程时，SQL Server按照以下顺序查找：当前数据库、sybsystemprocs数据库、master数据库。
+master..sp_dboption lportal, 
+
+master数据库从总体上控制用户数据库和SQL Server的操作。它保留着用户帐号（在syslogins中），可设置的环境变量（在sysconfigures中），系统错误信息（在sysmessages中）。在SQL Server上的数据库（在sysdatabases中），给每个数据库分配的存储空间（在sysusages中），装入系统的磁带和磁盘（在sysdevices中），以及动态锁（在syslocks中）的轨迹。另外，系统过程是在SQL Sserver安装时用buildmaster程序创建的。它是存储在master中的。
+只有在master数据库中才能用create database、或alter database，disk init等命令。
+
+Use with override to create a device fragment containing log space on a device that already contains data or a data fragment on a device already in use for the log. Use this option only when you have no other storage options and when up-to-the-minute recoverability is not critical.
+
+Restart Sybase 
+shutdown
+go
+
+run *****.bat
+
