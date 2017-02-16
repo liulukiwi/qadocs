@@ -1,0 +1,167 @@
+create user [username] identified by [password];
+grant all privileges to [username];
+drop user [username] cascade;
+
+sys和system
+
+这是2个默认的具有非常高的管理权限的用户，其中sys是最高管理员用户，system次之，权限不如sys大。
+
+好了，现在了解到这里可以了，先不用再往下深究system和sys的具体细节了。
+1 进入oracle需要输入用户名和密码
+2 oracle默认有2个用户sys和system
+3 sys和system都具有非常高的管理权限，但sys比system的权限大
+
+
+sqlplus username/password  如：普通用户登录  sqlplus scott/tiger --非管理员用户登陆
+sqlplus username/password@net_service_name 如: sqlplus scott/tiger@orcl --非管理员用户使用tns别名登陆
+sqlplus  username/password as sysdba 如：sqlplus sys/admin as sysdba --管理员用户使用tns别名登陆
+sqlplus username/password@//host:port/sid
+注意：sys和system需要以sysdba登录
+
+sqlplus命令行工具用连接数据库查询数据库
+所输入sqlplus命令实际操作系统环境启sqlplus程序
+
+以sqlplus / as sysdba方式登录时，采用的是操作系统验证的方式，所以用户名/密码输与不输入是一样的。
+这条命令是以SYS用户登录的//以操作系统权限认证的oracle sys管理员登陆
+
+sqlplus /nolog只是登录进了SQLPLUS,此时并没有登录数据库//-不在cmd或者terminal当中暴露密码的登陆方式
+所以需要再用connect username/password连接上数据库
+
+sqlplus                       --不显露密码的登陆方式
+Enter user-name：sys
+Enter password：password as sysdba     --以sys用户登陆的话 必须要加上 as sysdba 子句
+数据库服务名orcl 查看方式
+
+jdbc.default.driverClassName=oracle.jdbc.driver.OracleDriver
+jdbc.default.url=jdbc:oracle:thin:@[ipaddress]:1521:xe
+jdbc.default.username=[username]
+jdbc.default.password=[password]
+
+ Oracle 10: (jdbc.default.url=jdbc:oracle:thin:@[ipaddress]:1521:xe)
+ Oracle 11:(jdbc.default.url=jdbc:oracle:thin:@[ipaddress]:1521:orcl)
+ 
+ sqlplus /nolog
+ connect sys/password as sysdba
+ 
+ sql*plus的常用命令
+
+连接命令
+
+1.conn[ect]
+
+用法：conn 用户名/密码@网络服务名[as sysdba/sysoper]当用特权用户身份连接时，必须带上as sysdba或是as sysoper
+
+
+2.disc[onnect]
+
+说明: 该命令用来断开与当前数据库的连接
+
+3.psssw[ord]
+
+说明: 该命令用于修改用户的密码，如果要想修改其它用户的密码，需要用sys/system登录。
+
+4.show user
+
+说明: 显示当前用户名
+
+5.exit
+
+说明: 该命令会断开与数据库的连接，同时会退出sql*plus 
+
+导入脚本
+c:\>sqlplus system/password @create-oracle.sql [username] [password]
+	
+Inside Oracle:
+@[full file path]/create-oracle.sql [username] [password];
+
+dmp文件(表)导入与导出 
+ 
+前言
+
+ 
+
+    关于dmp文件我们用的还是比较多的，dmp文件它是作为Oracle导入和导出表使用的文件格式，今天就将dmp文件导出和导入进行学习。
+
+
+ 
+dmp文件导出
+
+ 
+
+    dmp文件导出用的比较多的一般是三种，他们分别是：导出整个数据库实例下的所有数据、导出指定用户的所有表、导出指定表。
+
+ 
+
+    这里已我的数据库为例，进行介绍，我的Oracle数据库实例为"ORACLE",查看自己数据库实例可以从"任务管理器-->服务"中进行查看，如:
+
+
+ 
+OracleServiceORACLE
+ 
+
+
+打开命令行：
+
+
+1，将数据库ORACLE完全导出,用户名system密码manager 导出到c:\daochu.dmp中
+
+   exp system/manager@ORACLE  file=c:\daochu.dmp full=y
+
+ 
+
+2，将数据库中RFD用户与,JYZGCX用户的表导出
+
+   exp system/manager@ORACLE  file=d:\daochu.dmpowner=(RFD,JYZGCX)
+
+ 
+
+3，将数据库中的表T_USER、T_ROLE导出
+
+    expJYZGCX/JYZGCX@ORACLEfile= d:\data\newsmgnt.dmp tables=(T_USER,T_ROLE)
+
+ 
+
+    上面的system为用户名，manager为密码，ORACLE为数据库实例名，其实不一定非的用system用户，只要是拥有管理员权限的用户都可以。
+
+
+ 
+dmp文件导入
+
+ 
+
+    1，打开“开始”-->输入cmd—> sqlplus /nolog；
+
+
+    2，输入 conn / as sysdba管理员账户登录；
+
+
+    3，需要创建表空间，如果我们知道需要导入的数据库的表空间直接创建就可以，如果不不知道，也没有关系，我们可以用txt打开dmp文件，使用快捷键ctrl+F，查找tablespace，就可以找到这个dmp文件所对应数据库的表空间，然后创建我们找到的表空间就可以；
+
+步，不创建的表空间，创建用户，并分配权限；
+
+
+    5，打开“开始”-->输入cmd(注意：这里是cmd窗口，不是sqlplus窗口！！！)，输入以下语句：“imp kang/123456@localhost/ORACLEfile="C:\daochu.dmp"full=y ignore=y”
+
+
+上述语句说明如下:
+
+    kang是创建的登录数据库用户名；
+
+    123456是登录数据库的密码；
+
+    localhost：代表当前数据库的地址是本机，如果是远程导入，替换成对应的ip地址就行
+
+ORACLE：是实例名称)
+
+    file：后面的是你当前dmp文件存放的路径
+
+    full=y，这个貌似是全部
+
+    ignore=y，忽略一些错误
+
+ 
+
+    备注：关于数据库实例、表空间、用户等基本概念和创建的语句可参考前面的文章“Oracle学习——扫盲篇”
+    http://blog.csdn.net/zwk626542417/article/details/39342431
+
+ 
