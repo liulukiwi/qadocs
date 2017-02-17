@@ -18,4 +18,9 @@ shutdown
 go
 
 run *****.bat
+ 
+-------数据库登录 语句---------
+isql -U sa -P 
+
+
 
